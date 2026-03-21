@@ -333,9 +333,9 @@ Open [http://localhost:8000](http://localhost:8000) in your browser.
 |---|---|---|
 | `GEMINI_API_KEY` | ✅ Yes | Google Gemini API key. Free tier: 1,500 requests/day, 15 req/min |
 | `SECRET_KEY` | ✅ Yes | Random string for signing session cookies. Generate with: `python -c "import secrets; print(secrets.token_hex(32))"` |
-| `SUPABASE_URL` | ❌ Optional | Your Supabase project URL (`https://xxx.supabase.co`) |
-| `SUPABASE_KEY` | ❌ Optional | Supabase anon (public) key |
-| `PORT` | ❌ Optional | Server port. Default: `8000`. Render sets this automatically. |
+| `SUPABASE_URL` | Optional | Your Supabase project URL (`https://xxx.supabase.co`) |
+| `SUPABASE_KEY` | Optional | Supabase anon (public) key |
+| `PORT` | Optional | Server port. Default: `8000`. Render sets this automatically. |
 
 ---
 
