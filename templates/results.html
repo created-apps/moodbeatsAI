@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if result %}{{ result.emotion | capitalize }} Mood — MoodBeats AI
+  {% else %}No Result — MoodBeats AI{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+
+  {% if not result %}
+  <!-- ── Empty / expired state ──────────────────────────────────────────── -->
+  <div class="text-center py-24">
+    <div class="text-6xl mb-6">🎵</div>
+    <h2 class="text-2xl font-bold text-white mb-3">No result found</h2>
+    <p class="text-slate-400 mb-8">
+      This link may have expired (results are kept for 1 hour) or is invalid.
+    </p>
+    <a href="/detect" class="btn-primary">← Detect My Mood</a>
+  </div>
+
+  {% else %}
+
+  <!-- ── Emotion banner ─────────────────────────────────────────────────── -->
+  <div class="rounded-2xl p-8 mb-10 text-center border"
+       style="background:{{ theme.bg }};border-color:{{ theme.border }}">
+
+    <div class="text-6xl mb-3 leading-none">{{ theme.emoji }}</div>
+
+    <h1 class="text-4xl font-extrabold mb-2"
+        style="color:{{ theme.accent }}">
+      {{ result.emotion | capitalize }}
+    </h1>
+
+    <!-- Confidence bar -->
+    <div class="max-w-xs mx-auto mt-4 mb-2">
+      <div class="flex justify-between text-xs text-slate-400 mb-1">
+        <span>AI Confidence</span>
+        <span>{{ result.confidence }}%</span>
+      </div>
+      <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+        <div class="confidence-fill rounded-full"
+             data-width="{{ result.confidence }}%"
+             style="background:{{ theme.accent }};width:0%"></div>
+      </div>
+    </div>
+
+    <p class="mood-description max-w-xl mx-auto mt-4">
+      {{ result.mood_description }}
+    </p>
+  </div>
+
+  <!-- ── Playlist header ────────────────────────────────────────────────── -->
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-bold text-white">
+      🎵 Your Playlist
+      <span class="text-slate-500 font-normal text-base ml-2">
+        ({{ result.songs | length }} songs)
+      </span>
+    </h2>
+    <a href="/detect" class="btn-secondary text-sm py-2 px-4">← Try Again</a>
+  </div>
+
+  <!-- ── Song grid ──────────────────────────────────────────────────────── -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
+    {% for song in result.songs %}
+    <div class="card flex flex-col">
+
+      <!-- Number + title row -->
+      <div class="flex items-start gap-3 mb-3">
+        <div class="shrink-0 w-8 h-8 rounded-full flex items-center justify-center
+                    text-xs font-bold border"
+             style="background:{{ theme.bg }};color:{{ theme.accent }};border-color:{{ theme.border }}">
+          {{ loop.index }}
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="font-semibold text-sm leading-snug truncate"
+             style="color:{{ theme.accent }}" title="{{ song.title }}">
+            {{ song.title }}
+          </p>
+          <p class="text-slate-400 text-xs mt-0.5 truncate" title="{{ song.artist }}">
+            {{ song.artist }}
+            {% if song.year %} · {{ song.year }}{% endif %}
+            {% if song.genre %} · {{ song.genre }}{% endif %}
+          </p>
+        </div>
+      </div>
+
+      <!-- Reason -->
+      <p class="text-slate-500 text-xs leading-relaxed italic flex-1 mb-4
+                border-l-2 pl-2"
+         style="border-color:{{ theme.border }}">
+        {{ song.reason }}
+      </p>
+
+      <!-- Action buttons -->
+      <div class="flex gap-2 flex-wrap mt-auto">
+        <a href="{{ song.spotify_url }}"  target="_blank" rel="noopener"
+           class="flex-1 text-center text-xs font-semibold py-2 px-3 rounded-lg
+                  transition hover:opacity-90"
+           style="background:#1db954;color:#fff">
+          🎵 Spotify
+        </a>
+        <a href="{{ song.yt_music_url }}" target="_blank" rel="noopener"
+           class="flex-1 text-center text-xs font-semibold py-2 px-3 rounded-lg
+                  transition hover:opacity-90"
+           style="background:#c00;color:#fff">
+          ▶ YT Music
+        </a>
+        <a href="{{ song.youtube_url }}"  target="_blank" rel="noopener"
+           class="text-center text-xs py-2 px-3 rounded-lg transition
+                  bg-slate-700 hover:bg-slate-600 text-slate-300">
+          🔍
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ── Bottom CTAs ────────────────────────────────────────────────────── -->
+  <div class="flex flex-wrap gap-4 justify-center">
+    <a href="/detect"  class="btn-primary">🎭 Detect Again</a>
+    <a href="/history" class="btn-secondary">📋 View History</a>
+  </div>
+
+  {% endif %}
+</div>
+{% endblock %}

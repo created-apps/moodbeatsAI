@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}MoodBeats AI — Your Emotion, Your Soundtrack{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ────────────────────────────────────────────────────────────────── -->
+<section class="relative overflow-hidden">
+  <!-- Ambient glow -->
+  <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+    <div class="w-[600px] h-[600px] rounded-full opacity-10"
+         style="background:radial-gradient(circle,#7c3aed 0%,transparent 70%)"></div>
+  </div>
+
+  <div class="relative max-w-4xl mx-auto px-4 sm:px-6 py-28 text-center">
+    <div class="inline-flex items-center gap-2 bg-violet-950 border border-violet-800
+                rounded-full px-4 py-1.5 text-violet-300 text-sm font-medium mb-8">
+      <span class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
+      Powered by Google Gemini AI
+    </div>
+
+    <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+      Your Emotion,<br/>
+      <span class="gradient-text">Your Soundtrack.</span>
+    </h1>
+
+    <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+      MoodBeats AI reads your facial expression or mood description and
+      instantly curates a personalised playlist — no account needed.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/detect" class="btn-primary text-base py-3 px-8">
+        🎵 Detect My Mood
+      </a>
+      <a href="#how-it-works" class="btn-secondary text-base py-3 px-8">
+        How It Works ↓
+      </a>
+    </div>
+
+    <!-- Supported emotions strip -->
+    <div class="mt-14 flex flex-wrap justify-center gap-2">
+      {% for name, theme in themes.items() %}
+      <span class="text-xs px-3 py-1 rounded-full font-medium"
+            style="background:{{ theme.bg }};color:{{ theme.accent }};border:1px solid {{ theme.border }}">
+        {{ theme.emoji }} {{ name | capitalize }}
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── Feature cards ────────────────────────────────────────────────────────── -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+  <h2 class="text-3xl font-bold text-center text-white mb-12">
+    Everything you need, nothing you don't
+  </h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% set features = [
+      ("📸", "Face Detection", "Point your webcam and let AI instantly read your facial expression in real time — no training or setup required."),
+      ("✍️", "Text Mood Input", "Prefer to type? Describe how you feel in any number of words and get equally accurate recommendations."),
+      ("🎵", "Instant Playlist", "8 hand-picked songs matched to your emotion. Direct links to Spotify, YouTube Music, and YouTube."),
+      ("🆓", "Completely Free", "No Spotify API, no paid subscriptions. Uses Spotify search URLs and Google Gemini free tier."),
+      ("📋", "Mood History", "Every detection is saved for your session so you can track how your mood evolves over time."),
+      ("🔒", "Privacy First", "Photos are processed by Gemini and never stored on our servers. Your face stays yours.")
+    ] %}
+    {% for icon, title, desc in features %}
+    <div class="card group">
+      <div class="text-3xl mb-4">{{ icon }}</div>
+      <h3 class="font-semibold text-white text-lg mb-2">{{ title }}</h3>
+      <p class="text-slate-400 text-sm leading-relaxed">{{ desc }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ── How it works ─────────────────────────────────────────────────────────── -->
+<section id="how-it-works" class="bg-slate-800/40 border-y border-slate-800 py-20">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <h2 class="text-3xl font-bold text-center text-white mb-14">How it works</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 text-center">
+      {% set steps = [
+        ("1", "📸", "Capture", "Take a photo with your webcam or describe your mood in words."),
+        ("2", "🧠", "Analyse", "Gemini AI detects your emotion with confidence score."),
+        ("3", "🎵", "Curate",  "8 songs are hand-picked to match your exact emotional state."),
+        ("4", "▶️", "Listen",  "Open any song directly in Spotify or YouTube Music."),
+      ] %}
+      {% for num, icon, title, desc in steps %}
+      <div class="flex flex-col items-center gap-3">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg
+                    text-violet-300 border border-violet-800"
+             style="background:#1e1b4b">{{ num }}</div>
+        <div class="text-3xl">{{ icon }}</div>
+        <h3 class="font-semibold text-white">{{ title }}</h3>
+        <p class="text-slate-400 text-sm">{{ desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ──────────────────────────────────────────────────────────────────── -->
+<section class="max-w-3xl mx-auto px-4 sm:px-6 py-24 text-center">
+  <h2 class="text-4xl font-extrabold text-white mb-4">Ready to vibe?</h2>
+  <p class="text-slate-400 text-lg mb-8">
+    No sign-up. No setup. Just your mood and your music.
+  </p>
+  <a href="/detect" class="btn-primary text-lg py-4 px-12">
+    🎵 Get My Playlist — It's Free
+  </a>
+</section>
+
+{% endblock %}

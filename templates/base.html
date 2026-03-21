@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}MoodBeats AI{% endblock %}</title>
+
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand: '#7c3aed' },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/custom.css" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>" />
+
+  {% block head %}{% endblock %}
+</head>
+
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+  <!-- ── Navbar ──────────────────────────────────────────────────────────── -->
+  <nav class="fixed top-0 inset-x-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 shrink-0">
+        <span class="text-2xl leading-none">🎵</span>
+        <span class="gradient-text font-bold text-lg tracking-tight">MoodBeats AI</span>
+      </a>
+
+      <!-- Desktop links -->
+      <div class="hidden md:flex items-center gap-7">
+        <a href="/"        class="nav-link {% if active_page == 'home'    %}active{% endif %}">Home</a>
+        <a href="/detect"  class="nav-link {% if active_page == 'detect'  %}active{% endif %}">Detect</a>
+        <a href="/history" class="nav-link {% if active_page == 'history' %}active{% endif %}">History</a>
+        <a href="/profile" class="nav-link {% if active_page == 'profile' %}active{% endif %}">Profile</a>
+        <a href="/detect"  class="btn-primary text-sm py-2 px-5">Get My Playlist →</a>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button id="menu-btn" class="md:hidden text-slate-400 hover:text-white p-1" aria-label="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden bg-slate-900 border-t border-slate-800 px-4 pb-4">
+      <div class="flex flex-col gap-3 pt-4">
+        <a href="/"        class="nav-link {% if active_page == 'home'    %}active{% endif %}">Home</a>
+        <a href="/detect"  class="nav-link {% if active_page == 'detect'  %}active{% endif %}">Detect</a>
+        <a href="/history" class="nav-link {% if active_page == 'history' %}active{% endif %}">History</a>
+        <a href="/profile" class="nav-link {% if active_page == 'profile' %}active{% endif %}">Profile</a>
+        <a href="/detect"  class="btn-primary text-sm mt-2 text-center">Get My Playlist →</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Loading overlay (shared) ────────────────────────────────────────── -->
+  <div id="loading-overlay"
+       class="hidden fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-sm
+              flex flex-col items-center justify-center gap-5">
+    <div class="spinner"></div>
+    <p id="loading-message" class="text-slate-300 text-base font-medium">
+      Analysing your mood…
+    </p>
+    <p class="text-slate-500 text-sm">Powered by Gemini AI — usually takes 3–5 s</p>
+  </div>
+
+  <!-- ── Main content ─────────────────────────────────────────────────────── -->
+  <main class="pt-16 min-h-screen">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ── Footer ───────────────────────────────────────────────────────────── -->
+  <footer class="border-t border-slate-800 py-8 text-center text-slate-500 text-sm">
+    <p class="mb-1">Built with ♥ using FastAPI &amp; Google Gemini AI</p>
+    <p>
+      <a href="/detect"  class="text-violet-400 hover:text-violet-300 mr-4">Detect Mood</a>
+      <a href="/history" class="text-violet-400 hover:text-violet-300 mr-4">History</a>
+      <a href="/profile" class="text-violet-400 hover:text-violet-300">Profile</a>
+    </p>
+  </footer>
+
+  <!-- Shared JS -->
+  <script src="/static/js/app.js"></script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

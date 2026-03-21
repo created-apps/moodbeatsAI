@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Mood History — MoodBeats AI{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+    <div>
+      <h1 class="text-4xl font-extrabold text-white mb-2">Mood History</h1>
+      <p class="text-slate-400">Every mood you've detected in this browser session.</p>
+    </div>
+    <a href="/detect" class="btn-primary shrink-0">+ New Detection</a>
+  </div>
+
+  {% if not rows %}
+  <!-- Empty state -->
+  <div class="card text-center py-16">
+    <div class="text-5xl mb-4">🎵</div>
+    <h2 class="text-xl font-bold text-white mb-2">No detections yet</h2>
+    <p class="text-slate-400 mb-6">
+      Head over to the Detect page and let AI read your mood for the first time.
+    </p>
+    <a href="/detect" class="btn-primary">Detect My Mood →</a>
+  </div>
+
+  {% else %}
+
+  <!-- Summary bar -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+    <div class="card text-center">
+      <p class="text-3xl font-extrabold text-violet-400">{{ rows | length }}</p>
+      <p class="text-slate-400 text-sm mt-1">Total Detections</p>
+    </div>
+    {% set emotions = rows | map(attribute='emotion') | list %}
+    {% set face_count = rows | selectattr('input_type', 'equalto', 'face') | list | length %}
+    {% set text_count = rows | selectattr('input_type', 'equalto', 'text') | list | length %}
+    <div class="card text-center">
+      <p class="text-3xl font-extrabold text-violet-400">{{ face_count }}</p>
+      <p class="text-slate-400 text-sm mt-1">📸 Face Detections</p>
+    </div>
+    <div class="card text-center">
+      <p class="text-3xl font-extrabold text-violet-400">{{ text_count }}</p>
+      <p class="text-slate-400 text-sm mt-1">✍️ Text Detections</p>
+    </div>
+    <div class="card text-center">
+      <p class="text-2xl font-extrabold mt-1">
+        {% if rows %}
+          {{ rows[0].theme.emoji }}
+          <span style="color:{{ rows[0].theme.accent }}">
+            {{ rows[0].emotion | capitalize }}
+          </span>
+        {% endif %}
+      </p>
+      <p class="text-slate-400 text-sm mt-1">Latest Mood</p>
+    </div>
+  </div>
+
+  <!-- Detection cards -->
+  <div class="flex flex-col gap-4">
+    {% for row in rows %}
+    {% set theme = row.theme %}
+    <div class="card">
+      <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+
+        <!-- Emotion badge -->
+        <div class="shrink-0 w-16 h-16 rounded-xl flex flex-col items-center
+                    justify-center border text-center"
+             style="background:{{ theme.bg }};border-color:{{ theme.border }}">
+          <span class="text-2xl leading-none">{{ theme.emoji }}</span>
+          <span class="text-xs font-semibold mt-0.5 capitalize"
+                style="color:{{ theme.accent }}">{{ row.emotion }}</span>
+        </div>
+
+        <!-- Details -->
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-3 mb-2">
+            <h3 class="font-semibold text-white capitalize text-lg">
+              {{ row.emotion | capitalize }}
+            </h3>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">
+              {{ row.confidence }}% confidence
+            </span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">
+              {% if row.input_type == 'face' %}📸 Webcam{% else %}✍️ Text{% endif %}
+            </span>
+            <span class="text-xs text-slate-500">
+              {{ row.created_at[:16].replace('T', ' ') if row.created_at else '' }}
+            </span>
+          </div>
+
+          <!-- Top 3 songs -->
+          {% if row.songs %}
+          <div class="flex flex-wrap gap-2 mt-2">
+            {% for song in row.songs[:3] %}
+            <span class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+              {{ song.title }} – {{ song.artist }}
+            </span>
+            {% endfor %}
+            {% if row.songs | length > 3 %}
+            <span class="text-xs text-slate-500 py-1">+{{ row.songs | length - 3 }} more</span>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% endif %}
+
+  <!-- Note about history -->
+  <p class="text-center text-slate-600 text-xs mt-8">
+    History is stored per browser session and requires Supabase to be configured.
+    Closing the browser clears your session ID.
+  </p>
+</div>
+{% endblock %}

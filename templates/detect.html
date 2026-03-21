@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Detect Mood — MoodBeats AI{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+
+  <!-- Page header -->
+  <div class="text-center mb-10">
+    <h1 class="text-4xl font-extrabold text-white mb-3">Detect Your Mood</h1>
+    <p class="text-slate-400 text-lg">
+      Use your camera <em>or</em> describe how you feel — Gemini does the rest.
+    </p>
+  </div>
+
+  <!-- Error banner -->
+  {% if error %}
+  <div class="mb-8 flex items-start gap-3 bg-red-950 border border-red-800 rounded-xl p-4 text-red-300">
+    <span class="text-xl shrink-0">⚠️</span>
+    <p>{{ error }}</p>
+  </div>
+  {% endif %}
+
+  <!-- ── Shared form (both tabs post here) ─────────────────────────────────── -->
+  <form id="detect-form" action="/detect" method="POST" enctype="multipart/form-data">
+    <input type="hidden" id="input-type"       name="input_type" value="face" />
+    <!-- Populated by webcam.js -->
+    <input type="hidden" id="image-data-input" name="image_data" value="" />
+
+    <!-- ── Tab switcher ────────────────────────────────────────────────────── -->
+    <div class="flex gap-2 mb-8 p-1 bg-slate-800 rounded-xl w-fit mx-auto flex-wrap justify-center">
+      <button type="button" id="tab-face-btn"   class="tab-btn active" onclick="switchTab('face')">
+        📸 Face Detection
+      </button>
+      <button type="button" id="tab-upload-btn" class="tab-btn"        onclick="switchTab('upload')">
+        🖼️ Upload Image
+      </button>
+      <button type="button" id="tab-text-btn"   class="tab-btn"        onclick="switchTab('text')">
+        ✍️ Text Description
+      </button>
+    </div>
+
+    <!-- ══ FACE TAB ══════════════════════════════════════════════════════════ -->
+    <div id="tab-face" class="card max-w-2xl mx-auto">
+      <p class="text-slate-400 text-sm text-center mb-6">
+        Allow camera access → click <strong>Start Camera</strong> → then <strong>Capture</strong>.
+      </p>
+
+      <!-- Camera placeholder (shown before camera starts) -->
+      <div id="webcam-placeholder"
+           class="mx-auto w-full max-w-sm aspect-video rounded-xl
+                  bg-slate-800 border border-slate-700 flex flex-col items-center
+                  justify-center gap-3 text-slate-500 mb-6">
+        <span class="text-5xl">📷</span>
+        <p class="text-sm">Camera not started</p>
+      </div>
+
+      <!-- Live camera + canvas (hidden until camera starts) -->
+      <div id="webcam-container" class="hidden mb-6">
+        <video id="webcam-video"   autoplay playsinline muted class="rounded-xl w-full max-w-sm mx-auto block"></video>
+        <img   id="capture-preview" class="hidden rounded-xl w-full max-w-sm mx-auto" alt="Captured" />
+        <canvas id="capture-canvas" class="hidden"></canvas>
+      </div>
+
+      <!-- Camera controls -->
+      <div class="flex flex-wrap gap-3 justify-center">
+        <button type="button" id="start-camera-btn" class="btn-primary">
+          📷 Start Camera
+        </button>
+        <button type="button" id="capture-btn"
+                class="hidden btn-secondary">
+          📸 Capture
+        </button>
+        <button type="button" id="analyze-btn"
+                class="btn-primary opacity-40 cursor-not-allowed"
+                disabled>
+          🎵 Analyse My Expression
+        </button>
+      </div>
+
+      <p class="text-center text-slate-600 text-xs mt-4">
+        Photo is sent to Gemini AI for analysis and is never stored.
+      </p>
+    </div>
+
+    <!-- ══ UPLOAD TAB ════════════════════════════════════════════════════════ -->
+    <div id="tab-upload" class="hidden card max-w-2xl mx-auto">
+      <p class="text-slate-400 text-sm text-center mb-6">
+        Upload a clear photo of a face (PNG or JPG) — Gemini will detect the emotion.
+      </p>
+
+      <!-- Drop zone -->
+      <label id="drop-zone"
+             class="flex flex-col items-center justify-center w-full h-52 rounded-xl
+                    border-2 border-dashed border-slate-600 bg-slate-800/60
+                    cursor-pointer hover:border-violet-500 hover:bg-slate-800
+                    transition-colors mb-5 group"
+             for="file-input">
+        <span id="drop-icon" class="text-5xl mb-3 group-hover:scale-110 transition-transform">🖼️</span>
+        <p class="text-slate-400 text-sm font-medium">Click to choose or drag &amp; drop</p>
+        <p class="text-slate-600 text-xs mt-1">PNG, JPG, JPEG — max 10 MB</p>
+        <input id="file-input" name="image_file" type="file" accept="image/png,image/jpeg,image/jpg" class="hidden" />
+      </label>
+
+      <!-- Preview -->
+      <div id="upload-preview-wrap" class="hidden mb-5">
+        <img id="upload-preview" class="rounded-xl max-h-64 mx-auto object-contain" alt="Preview" />
+        <p id="upload-filename" class="text-center text-slate-500 text-xs mt-2"></p>
+      </div>
+
+      <button type="button" id="upload-analyze-btn"
+              class="btn-primary w-full opacity-40 cursor-not-allowed"
+              disabled onclick="submitUploadForm()">
+        🎵 Analyse This Photo
+      </button>
+
+      <p class="text-center text-slate-600 text-xs mt-4">
+        Your photo is sent to Gemini AI for analysis and is never stored.
+      </p>
+    </div>
+
+    <!-- ══ TEXT TAB ══════════════════════════════════════════════════════════ -->
+    <div id="tab-text" class="hidden card max-w-2xl mx-auto">
+      <label for="mood-text" class="block text-slate-300 font-medium mb-2">
+        How are you feeling right now?
+      </label>
+      <textarea
+        id="mood-text"
+        name="mood_text"
+        rows="4"
+        placeholder="e.g. 'I'm really happy and excited — everything is going great today!' or 'Feeling a bit nostalgic…'"
+        class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3
+               text-slate-100 placeholder-slate-500 text-sm resize-none
+               focus:outline-none focus:border-violet-600 focus:ring-1 focus:ring-violet-600
+               transition mb-4"
+      ></textarea>
+
+      <!-- Example pills -->
+      <p class="text-xs text-slate-500 mb-3 font-medium uppercase tracking-wide">Quick examples</p>
+      <div class="flex flex-wrap gap-2 mb-6">
+        {% for example in text_examples %}
+        <button type="button"
+                class="example-pill text-xs px-3 py-1.5 rounded-full bg-slate-800
+                       border border-slate-700 text-slate-400 hover:border-violet-700
+                       hover:text-violet-300 transition cursor-pointer"
+                data-text="{{ example }}">
+          {{ example[:55] }}{% if example|length > 55 %}…{% endif %}
+        </button>
+        {% endfor %}
+      </div>
+
+      <button type="button" onclick="submitTextForm()" class="btn-primary w-full">
+        🎵 Get My Playlist
+      </button>
+    </div>
+
+  </form><!-- /detect-form -->
+
+  <!-- Tips -->
+  <div class="max-w-2xl mx-auto mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center text-sm text-slate-500">
+    <div class="p-3 rounded-lg bg-slate-800/50">💡 Good lighting improves face detection accuracy</div>
+    <div class="p-3 rounded-lg bg-slate-800/50">🎭 15 emotions detected including nostalgic &amp; romantic</div>
+    <div class="p-3 rounded-lg bg-slate-800/50">⚡ Results usually appear in 3–5 seconds</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/webcam.js"></script>
+<script>
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  const tabs = ['face', 'upload', 'text'];
+  const inputType = document.getElementById('input-type');
+
+  tabs.forEach(t => {
+    document.getElementById('tab-' + t).classList.add('hidden');
+    document.getElementById('tab-' + t + '-btn').classList.remove('active');
+  });
+  document.getElementById('tab-' + tab).classList.remove('hidden');
+  document.getElementById('tab-' + tab + '-btn').classList.add('active');
+  inputType.value = tab;
+}
+
+// ── Upload tab logic ──────────────────────────────────────────────────────────
+(function () {
+  const fileInput  = document.getElementById('file-input');
+  const dropZone   = document.getElementById('drop-zone');
+  const preview    = document.getElementById('upload-preview');
+  const previewWrap = document.getElementById('upload-preview-wrap');
+  const filename   = document.getElementById('upload-filename');
+  const analyzeBtn = document.getElementById('upload-analyze-btn');
+
+  function showPreview(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      showToast('Please choose a PNG or JPG image.', 'error');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('File is too large — max 10 MB.', 'error');
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    preview.src = url;
+    filename.textContent = file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+    previewWrap.classList.remove('hidden');
+    analyzeBtn.disabled = false;
+    analyzeBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+  }
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) showPreview(fileInput.files[0]);
+  });
+
+  // Drag-and-drop
+  dropZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropZone.classList.add('border-violet-500', 'bg-slate-800');
+  });
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('border-violet-500', 'bg-slate-800');
+  });
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('border-violet-500', 'bg-slate-800');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      // Transfer to the real file input so it submits with the form
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileInput.files = dt.files;
+      showPreview(file);
+    }
+  });
+})();
+
+function submitUploadForm() {
+  const fileInput = document.getElementById('file-input');
+  if (!fileInput.files || !fileInput.files[0]) {
+    showToast('Please choose an image first.', 'error');
+    return;
+  }
+  showLoading('Analysing your photo…');
+  document.getElementById('detect-form').submit();
+}
+
+// ── Text form submit ──────────────────────────────────────────────────────────
+function submitTextForm() {
+  const text = document.getElementById('mood-text').value.trim();
+  if (!text) {
+    showToast('Please describe how you feel first.', 'error');
+    return;
+  }
+  showLoading('Reading your mood…');
+  document.getElementById('detect-form').submit();
+}
+</script>
+{% endblock %}

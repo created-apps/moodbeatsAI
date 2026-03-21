@@ -1,0 +1,157 @@
+/* MoodBeats AI — Custom styles (Tailwind CDN handles layout; this file adds animations & overrides) */
+
+/* ── Fonts ────────────────────────────────────────────────────────────────── */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Nav links ────────────────────────────────────────────────────────────── */
+.nav-link {
+  color: #94a3b8;
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s ease;
+  padding: 4px 2px;
+  border-bottom: 2px solid transparent;
+}
+.nav-link:hover  { color: #e2e8f0; }
+.nav-link.active { color: #a78bfa; border-bottom-color: #7c3aed; }
+
+/* ── Primary button ───────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-block;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  font-size: 0.92rem;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+}
+.btn-primary:active { transform: translateY(0); }
+
+/* ── Secondary button ─────────────────────────────────────────────────────── */
+.btn-secondary {
+  display: inline-block;
+  background: transparent;
+  color: #a78bfa;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid #4c1d95;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  font-size: 0.92rem;
+}
+.btn-secondary:hover { background: rgba(124, 58, 237, 0.12); color: #c4b5fd; }
+
+/* ── Card ─────────────────────────────────────────────────────────────────── */
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Loading spinner ──────────────────────────────────────────────────────── */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #334155;
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: mb-spin 0.75s linear infinite;
+}
+
+@keyframes mb-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Confidence bar fill animation ───────────────────────────────────────── */
+.confidence-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 1s ease-out;
+}
+
+/* ── Tab active state ─────────────────────────────────────────────────────── */
+.tab-btn {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  color: #94a3b8;
+  background: transparent;
+}
+.tab-btn.active {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: #4c1d95;
+  color: #a78bfa;
+}
+.tab-btn:hover:not(.active) { color: #e2e8f0; background: #1e293b; }
+
+/* ── Webcam video rounded ─────────────────────────────────────────────────── */
+#webcam-video, #capture-preview {
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  display: block;
+  margin: 0 auto;
+  background: #0f172a;
+}
+
+/* ── Toast notification ───────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 14px 20px;
+  border-radius: 10px;
+  max-width: 360px;
+  font-size: 0.9rem;
+  animation: mb-slide-in 0.3s ease;
+}
+@keyframes mb-slide-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Gradient text ────────────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #a78bfa, #f0abfc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Prose / description text ─────────────────────────────────────────────── */
+.mood-description {
+  line-height: 1.75;
+  color: #cbd5e1;
+  font-size: 0.97rem;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
