@@ -34,8 +34,7 @@ _TEXT_EXAMPLES = [
 
 @router.get("/", response_class=HTMLResponse)
 async def landing(request: Request):
-    return tmpl.TemplateResponse("landing.html", {
-        "request":     request,
+    return tmpl.TemplateResponse(request, "landing.html", {
         "active_page": "home",
         "themes":      EMOTION_THEMES,
     })
@@ -45,8 +44,7 @@ async def landing(request: Request):
 
 @router.get("/detect", response_class=HTMLResponse)
 async def detect(request: Request, error: str = ""):
-    return tmpl.TemplateResponse("detect.html", {
-        "request":      request,
+    return tmpl.TemplateResponse(request, "detect.html", {
         "active_page":  "detect",
         "error":        error,
         "text_examples": _TEXT_EXAMPLES,
@@ -59,8 +57,7 @@ async def detect(request: Request, error: str = ""):
 async def results(request: Request, key: str = ""):
     result = result_cache.retrieve(key) if key else None
     theme  = get_theme(result["emotion"]) if result else None
-    return tmpl.TemplateResponse("results.html", {
-        "request":     request,
+    return tmpl.TemplateResponse(request, "results.html", {
         "active_page": "detect",
         "result":      result,
         "theme":       theme,
@@ -79,8 +76,7 @@ async def history(request: Request):
     for row in rows:
         row["theme"] = get_theme(row.get("emotion", "neutral"))
 
-    return tmpl.TemplateResponse("history.html", {
-        "request":     request,
+    return tmpl.TemplateResponse(request, "history.html", {
         "active_page": "history",
         "rows":        rows,
     })
@@ -105,8 +101,7 @@ async def profile(request: Request):
     for row in recent:
         row["theme"] = get_theme(row.get("emotion", "neutral"))
 
-    return tmpl.TemplateResponse("profile.html", {
-        "request":      request,
+    return tmpl.TemplateResponse(request, "profile.html", {
         "active_page":  "profile",
         "session_id":   session_id[:8] + "…" if session_id else "N/A",
         "display_name": display_name,

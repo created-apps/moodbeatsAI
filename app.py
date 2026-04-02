@@ -71,8 +71,9 @@ _tmpl = Jinja2Templates(directory="templates")
 async def not_found(request: Request, exc: Exception):
     logger.debug("404 at %s: %s", request.url, exc)
     return _tmpl.TemplateResponse(
+        request,
         "error.html",
-        {"request": request, "code": 404, "message": "Page not found."},
+        {"code": 404, "message": "Page not found."},
         status_code=404,
     )
 
@@ -81,8 +82,9 @@ async def not_found(request: Request, exc: Exception):
 async def server_error(request: Request, exc: Exception):
     logger.error("500 at %s: %s", request.url, exc)
     return _tmpl.TemplateResponse(
+        request,
         "error.html",
-        {"request": request, "code": 500, "message": "Something went wrong on our end."},
+        {"code": 500, "message": "Something went wrong on our end."},
         status_code=500,
     )
 
