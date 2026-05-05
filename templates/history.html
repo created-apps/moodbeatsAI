@@ -2,23 +2,27 @@
 {% block title %}Mood History — MoodBeats AI{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-14">
 
   <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 fade-up">
     <div>
-      <h1 class="text-4xl font-extrabold text-white mb-2">Mood History</h1>
-      <p class="text-slate-400">Every mood you've detected in this browser session.</p>
+      <h1 style="font-size:2.4rem;font-weight:900;color:var(--text-primary);margin-bottom:6px;font-family:'Outfit',sans-serif;">
+        Mood History
+      </h1>
+      <p style="color:var(--text-secondary);font-size:0.9rem;">Every mood you've detected in this browser session.</p>
     </div>
     <a href="/detect" class="btn-primary shrink-0">+ New Detection</a>
   </div>
 
   {% if not rows %}
   <!-- Empty state -->
-  <div class="card text-center py-16">
-    <div class="text-5xl mb-4">🎵</div>
-    <h2 class="text-xl font-bold text-white mb-2">No detections yet</h2>
-    <p class="text-slate-400 mb-6">
+  <div class="card" style="text-align:center;padding:5rem 2rem;">
+    <div style="font-size:3rem;margin-bottom:1rem;opacity:0.4;">🎵</div>
+    <h2 style="font-size:1.25rem;font-weight:700;color:var(--text-primary);margin-bottom:8px;font-family:'Outfit',sans-serif;">
+      No detections yet
+    </h2>
+    <p style="color:var(--text-secondary);margin-bottom:1.75rem;font-size:0.88rem;max-width:320px;margin-left:auto;margin-right:auto;line-height:1.6;">
       Head over to the Detect page and let AI read your mood for the first time.
     </p>
     <a href="/detect" class="btn-primary">Detect My Mood →</a>
@@ -27,83 +31,77 @@
   {% else %}
 
   <!-- Summary bar -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-    <div class="card text-center">
-      <p class="text-3xl font-extrabold text-violet-400">{{ rows | length }}</p>
-      <p class="text-slate-400 text-sm mt-1">Total Detections</p>
-    </div>
-    {% set emotions = rows | map(attribute='emotion') | list %}
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 fade-up fade-up-d1">
     {% set face_count = rows | selectattr('input_type', 'equalto', 'face') | list | length %}
     {% set text_count = rows | selectattr('input_type', 'equalto', 'text') | list | length %}
-    <div class="card text-center">
-      <p class="text-3xl font-extrabold text-violet-400">{{ face_count }}</p>
-      <p class="text-slate-400 text-sm mt-1">📸 Face Detections</p>
+
+    <div class="card" style="text-align:center;padding:1.25rem;">
+      <p class="stat-number" style="font-size:2.2rem;">{{ rows | length }}</p>
+      <p style="color:var(--text-muted);font-size:0.78rem;margin-top:4px;">Total Detections</p>
     </div>
-    <div class="card text-center">
-      <p class="text-3xl font-extrabold text-violet-400">{{ text_count }}</p>
-      <p class="text-slate-400 text-sm mt-1">✍️ Text Detections</p>
+    <div class="card" style="text-align:center;padding:1.25rem;">
+      <p class="stat-number" style="font-size:2.2rem;">{{ face_count }}</p>
+      <p style="color:var(--text-muted);font-size:0.78rem;margin-top:4px;">📸 Face Detections</p>
     </div>
-    <div class="card text-center">
-      <p class="text-2xl font-extrabold mt-1">
-        {% if rows %}
-          {{ rows[0].theme.emoji }}
-          <span style="color:{{ rows[0].theme.accent }}">
-            {{ rows[0].emotion | capitalize }}
-          </span>
-        {% endif %}
+    <div class="card" style="text-align:center;padding:1.25rem;">
+      <p class="stat-number" style="font-size:2.2rem;">{{ text_count }}</p>
+      <p style="color:var(--text-muted);font-size:0.78rem;margin-top:4px;">✍️ Text Detections</p>
+    </div>
+    <div class="card" style="text-align:center;padding:1.25rem;">
+      {% if rows %}
+      <p style="font-size:1.6rem;margin-bottom:2px;">{{ rows[0].theme.emoji }}</p>
+      <p style="font-weight:700;font-size:0.9rem;color:{{ rows[0].theme.accent }};">
+        {{ rows[0].emotion | capitalize }}
       </p>
-      <p class="text-slate-400 text-sm mt-1">Latest Mood</p>
+      {% endif %}
+      <p style="color:var(--text-muted);font-size:0.78rem;margin-top:2px;">Latest Mood</p>
     </div>
   </div>
 
   <!-- Detection cards -->
-  <div class="flex flex-col gap-4">
+  <div style="display:flex;flex-direction:column;gap:12px;">
     {% for row in rows %}
     {% set theme = row.theme %}
-    <div class="card">
+    <div class="card song-card fade-up" style="padding:1.25rem 1.5rem;animation-delay:{{ loop.index0 * 0.05 }}s;">
       <div class="flex flex-col sm:flex-row sm:items-start gap-4">
 
         <!-- Emotion badge -->
-        <div class="shrink-0 w-16 h-16 rounded-xl flex flex-col items-center
-                    justify-center border text-center"
-             style="background:{{ theme.bg }};border-color:{{ theme.border }}">
-          <span class="text-2xl leading-none">{{ theme.emoji }}</span>
-          <span class="text-xs font-semibold mt-0.5 capitalize"
-                style="color:{{ theme.accent }}">{{ row.emotion }}</span>
+        <div style="flex-shrink:0;width:56px;height:56px;border-radius:14px;
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    background:{{ theme.bg }};border:1px solid {{ theme.border }};">
+          <span style="font-size:1.4rem;line-height:1;">{{ theme.emoji }}</span>
+          <span style="font-size:0.6rem;font-weight:700;margin-top:2px;color:{{ theme.accent }};text-transform:capitalize;">{{ row.emotion }}</span>
         </div>
 
         <!-- Details -->
-        <div class="flex-1 min-w-0">
-          <div class="flex flex-wrap items-center gap-3 mb-2">
-            <h3 class="font-semibold text-white capitalize text-lg">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px;">
+            <h3 style="font-weight:700;color:var(--text-primary);font-size:1rem;text-transform:capitalize;font-family:'Outfit',sans-serif;">
               {{ row.emotion | capitalize }}
             </h3>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">
-              {{ row.confidence }}% confidence
-            </span>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">
-              {% if row.input_type == 'face' %}📸 Webcam{% else %}✍️ Text{% endif %}
-            </span>
-            <span class="text-xs text-slate-500">
+            <span class="badge">{{ row.confidence }}% confidence</span>
+            <span class="badge">{% if row.input_type == 'face' %}📸 Webcam{% else %}✍️ Text{% endif %}</span>
+            <span style="color:var(--text-muted);font-size:0.72rem;">
               {{ row.created_at[:16].replace('T', ' ') if row.created_at else '' }}
             </span>
           </div>
 
           <!-- Top 3 songs -->
           {% if row.songs %}
-          <div class="flex flex-wrap gap-2 mt-2">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
             {% for song in row.songs[:3] %}
-            <span class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+            <span style="font-size:0.72rem;padding:4px 10px;border-radius:999px;
+                         background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);
+                         color:var(--text-secondary);">
               {{ song.title }} – {{ song.artist }}
             </span>
             {% endfor %}
             {% if row.songs | length > 3 %}
-            <span class="text-xs text-slate-500 py-1">+{{ row.songs | length - 3 }} more</span>
+            <span style="color:var(--text-muted);font-size:0.72rem;padding:4px 0;">+{{ row.songs | length - 3 }} more</span>
             {% endif %}
           </div>
           {% endif %}
         </div>
-
       </div>
     </div>
     {% endfor %}
@@ -111,8 +109,7 @@
 
   {% endif %}
 
-  <!-- Note about history -->
-  <p class="text-center text-slate-600 text-xs mt-8">
+  <p style="text-align:center;color:var(--text-muted);font-size:0.72rem;margin-top:2.5rem;line-height:1.6;">
     History is stored per browser session and requires Supabase to be configured.
     Closing the browser clears your session ID.
   </p>

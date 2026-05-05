@@ -2,134 +2,151 @@
 {% block title %}Profile — MoodBeats AI{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-14">
 
   <!-- Header -->
-  <div class="mb-10">
-    <h1 class="text-4xl font-extrabold text-white mb-2">Your Profile</h1>
-    <p class="text-slate-400">Session stats, preferences, and recent mood history.</p>
+  <div class="mb-10 fade-up">
+    <h1 style="font-size:2.4rem;font-weight:900;color:var(--text-primary);margin-bottom:6px;font-family:'Outfit',sans-serif;">
+      Your Profile
+    </h1>
+    <p style="color:var(--text-secondary);font-size:0.9rem;">Session stats, preferences, and recent mood history.</p>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    <!-- ── Left column: identity + name form ─────────────────────────────── -->
-    <div class="lg:col-span-1 flex flex-col gap-6">
+    <!-- ── Left column ──────────────────────────────────────────────────── -->
+    <div class="lg:col-span-1 flex flex-col gap-5">
 
       <!-- Identity card -->
-      <div class="card text-center">
-        <div class="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-4"
-             style="background:#1e1b4b;border:2px solid #4c1d95">
+      <div class="card noise fade-up" style="text-align:center;padding:2rem;">
+        <div style="width:72px;height:72px;border-radius:22px;
+                    background:linear-gradient(135deg,#7c3aed,#4c1d95);
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:2rem;margin:0 auto 1rem;
+                    box-shadow:0 8px 28px rgba(109,40,217,0.4);">
           🎵
         </div>
-        <h2 class="text-white font-bold text-xl mb-1">
+        <h2 style="color:var(--text-primary);font-weight:700;font-size:1.1rem;margin-bottom:4px;font-family:'Outfit',sans-serif;">
           {{ display_name if display_name else "Music Lover" }}
         </h2>
-        <p class="text-slate-500 text-xs font-mono">Session · {{ session_id }}</p>
+        <p style="color:var(--text-muted);font-size:0.7rem;font-family:monospace;letter-spacing:0.03em;">
+          Session · {{ session_id }}
+        </p>
       </div>
 
       <!-- Display name form -->
-      <div class="card">
-        <h3 class="text-white font-semibold mb-4">Display Name</h3>
-        <form action="/profile/update" method="POST" class="flex flex-col gap-3">
+      <div class="card fade-up fade-up-d1" style="padding:1.5rem;">
+        <h3 style="color:var(--text-primary);font-weight:600;margin-bottom:14px;font-size:0.92rem;">
+          Display Name
+        </h3>
+        <form action="/profile/update" method="POST" style="display:flex;flex-direction:column;gap:10px;">
           <input
             type="text"
             name="display_name"
             value="{{ display_name }}"
             placeholder="Enter your name…"
             maxlength="50"
-            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5
-                   text-slate-100 placeholder-slate-500 text-sm
-                   focus:outline-none focus:border-violet-600 focus:ring-1 focus:ring-violet-600
-                   transition"
+            style="width:100%;border-radius:12px;padding:10px 14px;font-size:0.85rem;
+                   outline:none;background:rgba(255,255,255,0.05);
+                   border:1px solid rgba(255,255,255,0.10);
+                   color:var(--text-primary);font-family:'Sora',sans-serif;
+                   transition:border-color 0.2s,box-shadow 0.2s;"
+            onfocus="this.style.borderColor='rgba(139,92,246,0.6)';this.style.boxShadow='0 0 0 3px rgba(139,92,246,0.12)'"
+            onblur="this.style.borderColor='rgba(255,255,255,0.10)';this.style.boxShadow='none'"
           />
-          <button type="submit" class="btn-primary w-full text-sm py-2.5">
+          <button type="submit" class="btn-primary w-full" style="padding:0.6rem;">
             Save Name
           </button>
         </form>
       </div>
 
       <!-- Quick links -->
-      <div class="card">
-        <h3 class="text-white font-semibold mb-3">Quick Links</h3>
-        <div class="flex flex-col gap-2">
-          <a href="/detect"  class="text-violet-400 hover:text-violet-300 text-sm transition">📸 Detect My Mood</a>
-          <a href="/history" class="text-violet-400 hover:text-violet-300 text-sm transition">📋 Full History</a>
-          <a href="/"        class="text-violet-400 hover:text-violet-300 text-sm transition">🏠 Home</a>
+      <div class="card fade-up fade-up-d2" style="padding:1.5rem;">
+        <h3 style="color:var(--text-primary);font-weight:600;margin-bottom:12px;font-size:0.92rem;">
+          Quick Links
+        </h3>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <a href="/detect"  style="color:var(--purple-accent);font-size:0.85rem;text-decoration:none;transition:opacity 0.2s;"
+             onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">📸 Detect My Mood</a>
+          <a href="/history" style="color:var(--purple-accent);font-size:0.85rem;text-decoration:none;transition:opacity 0.2s;"
+             onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">📋 Full History</a>
+          <a href="/"        style="color:var(--purple-accent);font-size:0.85rem;text-decoration:none;transition:opacity 0.2s;"
+             onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">🏠 Home</a>
         </div>
       </div>
     </div>
 
-    <!-- ── Right column: stats + recent history ───────────────────────────── -->
-    <div class="lg:col-span-2 flex flex-col gap-6">
+    <!-- ── Right column ─────────────────────────────────────────────────── -->
+    <div class="lg:col-span-2 flex flex-col gap-5">
 
       <!-- Stats grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-2 gap-4">
-
-        <div class="card text-center">
-          <p class="text-4xl font-extrabold text-violet-400 mb-1">{{ total }}</p>
-          <p class="text-slate-400 text-sm">Total Detections</p>
+      <div class="grid grid-cols-2 gap-4 fade-up fade-up-d1">
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <p class="stat-number" style="font-size:2.6rem;">{{ total }}</p>
+          <p style="color:var(--text-muted);font-size:0.8rem;margin-top:4px;">Total Detections</p>
         </div>
 
-        <div class="card text-center">
+        <div class="card" style="text-align:center;padding:1.5rem;">
           {% if top_emotion and top_theme %}
-          <p class="text-3xl mb-1">{{ top_theme.emoji }}</p>
-          <p class="font-bold capitalize mb-0.5" style="color:{{ top_theme.accent }}">
+          <p style="font-size:2rem;margin-bottom:4px;">{{ top_theme.emoji }}</p>
+          <p style="font-weight:700;text-transform:capitalize;color:{{ top_theme.accent }};font-size:1rem;font-family:'Outfit',sans-serif;">
             {{ top_emotion | capitalize }}
           </p>
-          <p class="text-slate-400 text-sm">Top Emotion</p>
+          <p style="color:var(--text-muted);font-size:0.78rem;margin-top:4px;">Top Emotion</p>
           {% else %}
-          <p class="text-3xl mb-1">🎵</p>
-          <p class="text-slate-400 text-sm">No detections yet</p>
+          <p style="font-size:2rem;margin-bottom:8px;opacity:0.4;">🎵</p>
+          <p style="color:var(--text-muted);font-size:0.8rem;">No detections yet</p>
           {% endif %}
         </div>
 
-        <div class="card text-center">
-          <p class="text-4xl font-extrabold text-violet-400 mb-1">{{ face_count }}</p>
-          <p class="text-slate-400 text-sm">📸 Face Detections</p>
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <p class="stat-number" style="font-size:2.6rem;">{{ face_count }}</p>
+          <p style="color:var(--text-muted);font-size:0.8rem;margin-top:4px;">📸 Face Detections</p>
         </div>
 
-        <div class="card text-center">
-          <p class="text-4xl font-extrabold text-violet-400 mb-1">{{ text_count }}</p>
-          <p class="text-slate-400 text-sm">✍️ Text Detections</p>
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <p class="stat-number" style="font-size:2.6rem;">{{ text_count }}</p>
+          <p style="color:var(--text-muted);font-size:0.8rem;margin-top:4px;">✍️ Text Detections</p>
         </div>
       </div>
 
       <!-- Recent detections -->
-      <div class="card">
-        <h3 class="text-white font-semibold mb-4">Recent Detections</h3>
+      <div class="card fade-up fade-up-d2" style="padding:1.5rem;">
+        <h3 style="color:var(--text-primary);font-weight:600;margin-bottom:1rem;font-size:0.92rem;">Recent Detections</h3>
 
         {% if not recent %}
-        <div class="text-center py-8 text-slate-500">
-          <p class="text-3xl mb-2">🎭</p>
-          <p class="text-sm">No detections yet.</p>
-          <a href="/detect" class="text-violet-400 text-sm hover:text-violet-300 mt-2 inline-block">
+        <div style="text-align:center;padding:2.5rem 0;color:var(--text-muted);">
+          <p style="font-size:2rem;margin-bottom:8px;opacity:0.4;">🎭</p>
+          <p style="font-size:0.84rem;margin-bottom:10px;">No detections yet.</p>
+          <a href="/detect" style="color:var(--purple-accent);font-size:0.84rem;text-decoration:none;">
             Detect your first mood →
           </a>
         </div>
 
         {% else %}
-        <div class="flex flex-col divide-y divide-slate-800">
+        <div style="display:flex;flex-direction:column;">
           {% for row in recent %}
           {% set theme = row.theme %}
-          <div class="py-3 flex items-center gap-4 {% if not loop.first %}pt-3{% endif %}">
+          <div style="padding:12px 0;display:flex;align-items:center;gap:12px;
+                      {% if not loop.last %}border-bottom:1px solid rgba(255,255,255,0.06);{% endif %}">
             <!-- Emoji badge -->
-            <div class="w-10 h-10 shrink-0 rounded-lg flex items-center justify-center border"
-                 style="background:{{ theme.bg }};border-color:{{ theme.border }}">
-              <span class="text-xl leading-none">{{ theme.emoji }}</span>
+            <div style="width:38px;height:38px;flex-shrink:0;border-radius:12px;
+                        display:flex;align-items:center;justify-content:center;
+                        background:{{ theme.bg }};border:1px solid {{ theme.border }};">
+              <span style="font-size:1.1rem;line-height:1;">{{ theme.emoji }}</span>
             </div>
 
             <!-- Info -->
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="font-medium capitalize text-sm"
-                      style="color:{{ theme.accent }}">{{ row.emotion | capitalize }}</span>
-                <span class="text-xs text-slate-500">{{ row.confidence }}%</span>
-                <span class="text-xs px-1.5 py-0.5 rounded bg-slate-800 text-slate-500">
-                  {{ '📸' if row.input_type == 'face' else '✍️' }}
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap;">
+                <span style="font-weight:600;text-transform:capitalize;font-size:0.85rem;color:{{ theme.accent }};">
+                  {{ row.emotion | capitalize }}
                 </span>
+                <span class="badge">{{ row.confidence }}%</span>
+                <span class="badge">{{ '📸' if row.input_type == 'face' else '✍️' }}</span>
               </div>
               {% if row.songs %}
-              <p class="text-slate-500 text-xs truncate mt-0.5">
+              <p style="color:var(--text-muted);font-size:0.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                 {{ row.songs[0].title }} – {{ row.songs[0].artist }}
                 {% if row.songs | length > 1 %} +{{ row.songs | length - 1 }} more{% endif %}
               </p>
@@ -137,30 +154,34 @@
             </div>
 
             <!-- Timestamp -->
-            <span class="text-slate-600 text-xs shrink-0 hidden sm:block">
+            <span style="color:var(--text-muted);font-size:0.7rem;flex-shrink:0;" class="hidden sm:block">
               {{ row.created_at[:10] if row.created_at else '' }}
             </span>
           </div>
           {% endfor %}
         </div>
 
-        <div class="mt-4 text-center">
-          <a href="/history" class="text-violet-400 text-sm hover:text-violet-300 transition">
+        <div style="margin-top:14px;text-align:center;">
+          <a href="/history" style="color:var(--purple-accent);font-size:0.84rem;text-decoration:none;">
             View full history →
           </a>
         </div>
         {% endif %}
       </div>
 
-      <!-- Gemini key status -->
-      <div class="card border-l-4" style="border-left-color:#7c3aed">
-        <h3 class="text-white font-semibold mb-2">System Status</h3>
-        <div class="flex items-center gap-2 text-sm text-slate-400">
-          <span class="w-2 h-2 rounded-full bg-green-400"></span>
+      <!-- System status -->
+      <div class="card fade-up fade-up-d3"
+           style="padding:1.5rem;border-left:3px solid #7c3aed;">
+        <h3 style="color:var(--text-primary);font-weight:600;margin-bottom:12px;font-size:0.92rem;">System Status</h3>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.84rem;color:var(--text-secondary);margin-bottom:8px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#4ade80;flex-shrink:0;
+                       box-shadow:0 0 6px rgba(74,222,128,0.6);"></span>
           Gemini AI connected
         </div>
-        <div class="flex items-center gap-2 text-sm text-slate-400 mt-1">
-          <span class="w-2 h-2 rounded-full {% if total > 0 %}bg-green-400{% else %}bg-slate-600{% endif %}"></span>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.84rem;color:var(--text-secondary);">
+          <span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;
+                       background:{% if total > 0 %}#4ade80{% else %}rgba(255,255,255,0.2){% endif %};
+                       box-shadow:{% if total > 0 %}0 0 6px rgba(74,222,128,0.6){% else %}none{% endif %};"></span>
           Supabase history {{ 'active' if total > 0 else '(not configured or no data)' }}
         </div>
       </div>

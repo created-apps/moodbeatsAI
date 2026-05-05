@@ -1,48 +1,223 @@
 {% extends "base.html" %}
-
 {% block title %}MoodBeats AI — Your Emotion, Your Soundtrack{% endblock %}
+
+{% block head %}
+<style>
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+  }
+  .hero-h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(2.8rem, 6.5vw, 5.2rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    color: #fff;
+  }
+  .hero-h1 .accent {
+    background: linear-gradient(130deg, #c084fc 0%, #a78bfa 50%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glass-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    background: rgba(124,58,237,0.14);
+    border: 1px solid rgba(167,139,250,0.22);
+    color: #c4b5fd;
+    backdrop-filter: blur(12px);
+  }
+  /* Glass music player */
+  .glass-player {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 22px;
+    padding: 18px 20px;
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.05) inset,
+      0 28px 64px rgba(0,0,0,0.5),
+      0 4px 20px rgba(109,40,217,0.22);
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-player::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  }
+  .eq-bar {
+    width: 3px; border-radius: 2px; background: var(--accent);
+    animation: eq var(--d) ease-in-out infinite alternate;
+    transform-origin: bottom;
+  }
+  @keyframes eq { from { transform:scaleY(0.2); } to { transform:scaleY(1); } }
+
+  /* Feature card */
+  .feat-card {
+    background: rgba(255,255,255,0.042);
+    border: 1px solid rgba(255,255,255,0.085);
+    border-radius: 20px;
+    padding: 1.75rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s, box-shadow 0.25s;
+  }
+  .feat-card::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  }
+  .feat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(167,139,250,0.2);
+    box-shadow: 0 24px 56px rgba(0,0,0,0.38), 0 0 28px rgba(109,40,217,0.10);
+  }
+  .step-num {
+    width:46px; height:46px; border-radius:14px;
+    background: rgba(109,40,217,0.16);
+    border: 1px solid rgba(167,139,250,0.24);
+    color: #c4b5fd;
+    font-family: 'Outfit',sans-serif; font-weight:800; font-size:1.05rem;
+    display:flex; align-items:center; justify-content:center;
+    margin: 0 auto 14px;
+  }
+  .emo-chip {
+    font-size: 0.72rem; font-weight: 600;
+    padding: 5px 13px; border-radius: 999px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .emo-chip:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.35); }
+
+  @keyframes pulseDot {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:0.45; transform:scale(0.75); }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 
-<!-- ── Hero ────────────────────────────────────────────────────────────────── -->
-<section class="relative overflow-hidden">
-  <!-- Ambient glow -->
-  <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
-    <div class="w-[600px] h-[600px] rounded-full opacity-10"
-         style="background:radial-gradient(circle,#7c3aed 0%,transparent 70%)"></div>
-  </div>
+<!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+<section style="position:relative;overflow:hidden;padding:6.5rem 1rem 4.5rem;">
 
-  <div class="relative max-w-4xl mx-auto px-4 sm:px-6 py-28 text-center">
-    <div class="inline-flex items-center gap-2 bg-violet-950 border border-violet-800
-                rounded-full px-4 py-1.5 text-violet-300 text-sm font-medium mb-8">
-      <span class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
+  <!-- Depth orbs -->
+  <div class="orb" style="width:800px;height:800px;top:-280px;left:-220px;
+       background:radial-gradient(circle,rgba(109,40,217,0.28) 0%,transparent 62%);"></div>
+  <div class="orb" style="width:550px;height:550px;top:60px;right:-180px;
+       background:radial-gradient(circle,rgba(76,29,149,0.20) 0%,transparent 62%);"></div>
+  <div class="orb" style="width:350px;height:350px;bottom:-60px;left:42%;
+       background:radial-gradient(circle,rgba(139,92,246,0.13) 0%,transparent 62%);"></div>
+
+  <div style="position:relative;z-index:2;max-width:840px;margin:0 auto;text-align:center;">
+
+    <!-- Badge -->
+    <div class="glass-pill fade-up" style="margin-bottom:1.75rem;">
+      <span style="width:6px;height:6px;border-radius:50%;background:#a78bfa;
+                   box-shadow:0 0 7px #a78bfa;display:inline-block;
+                   animation:pulseDot 2s infinite;"></span>
       Powered by Google Gemini AI
     </div>
 
-    <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+    <!-- Heading -->
+    <h1 class="hero-h1 fade-up fade-up-d1" style="margin-bottom:1.2rem;">
       Your Emotion,<br/>
-      <span class="gradient-text">Your Soundtrack.</span>
+      <span class="accent">Your Soundtrack.</span>
     </h1>
 
-    <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-      MoodBeats AI reads your facial expression or mood description and
-      instantly curates a personalised playlist — no account needed.
+    <p class="fade-up fade-up-d2"
+       style="color:rgba(240,238,255,0.52);font-size:1.05rem;max-width:490px;
+              margin:0 auto 2.2rem;line-height:1.7;">
+      MoodBeats AI reads your facial expression or mood description
+      and instantly curates a personalised playlist — no account needed.
     </p>
 
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <a href="/detect" class="btn-primary text-base py-3 px-8">
+    <!-- CTAs -->
+    <div class="fade-up fade-up-d3"
+         style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:3.25rem;">
+      <a href="/detect" class="btn-primary" style="font-size:1rem;padding:0.75rem 2.1rem;">
         🎵 Detect My Mood
       </a>
-      <a href="#how-it-works" class="btn-secondary text-base py-3 px-8">
+      <a href="#how-it-works" class="btn-secondary" style="font-size:1rem;padding:0.75rem 2.1rem;">
         How It Works ↓
       </a>
     </div>
 
-    <!-- Supported emotions strip -->
-    <div class="mt-14 flex flex-wrap justify-center gap-2">
+    <!-- ── Glass player widget ─────────────────────────────────────────── -->
+    <div class="glass-player fade-up fade-up-d4" style="max-width:340px;margin:0 auto;">
+      <!-- Top shimmer -->
+      <div style="position:absolute;inset:0;border-radius:22px;
+                  background:linear-gradient(135deg,rgba(255,255,255,0.07) 0%,transparent 50%);
+                  pointer-events:none;"></div>
+
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:15px;position:relative;">
+        <div style="width:46px;height:46px;border-radius:14px;flex-shrink:0;
+                    background:linear-gradient(135deg,#6d28d9,#4c1d95);
+                    display:flex;align-items:center;justify-content:center;font-size:1.35rem;
+                    box-shadow:0 4px 16px rgba(109,40,217,0.55);">🎵</div>
+        <div style="flex:1;min-width:0;text-align:left;">
+          <p style="font-family:'Outfit',sans-serif;font-weight:700;font-size:0.9rem;
+                    color:#f0eeff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            In Our Own Way
+          </p>
+          <p style="font-size:0.71rem;color:rgba(240,238,255,0.40);margin-top:2px;">
+            EMBRZ · Nostalgic
+          </p>
+        </div>
+        <!-- EQ -->
+        <div style="display:flex;align-items:flex-end;gap:3px;height:24px;flex-shrink:0;">
+          <div class="eq-bar" style="height:10px;--d:0.95s;"></div>
+          <div class="eq-bar" style="height:22px;--d:0.68s;animation-delay:0.1s;"></div>
+          <div class="eq-bar" style="height:15px;--d:1.1s;animation-delay:0.2s;"></div>
+          <div class="eq-bar" style="height:24px;--d:0.78s;animation-delay:0.05s;"></div>
+          <div class="eq-bar" style="height:9px;--d:0.88s;animation-delay:0.15s;"></div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div style="position:relative;height:3px;border-radius:99px;background:rgba(255,255,255,0.10);
+                  overflow:visible;margin-bottom:10px;cursor:pointer;">
+        <div style="width:38%;height:100%;border-radius:99px;
+                    background:linear-gradient(90deg,#7c3aed,#a78bfa);position:relative;">
+          <div style="position:absolute;right:-5px;top:50%;transform:translateY(-50%);
+                      width:11px;height:11px;border-radius:50%;background:#fff;
+                      box-shadow:0 0 8px rgba(167,139,250,0.7);"></div>
+        </div>
+      </div>
+
+      <!-- Time + Controls -->
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:0.67rem;color:rgba(240,238,255,0.35);">1:24</span>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <span style="font-size:0.9rem;color:rgba(240,238,255,0.32);cursor:pointer;">⏮</span>
+          <div style="width:34px;height:34px;border-radius:50%;cursor:pointer;
+                      background:linear-gradient(135deg,#7c3aed,#5b21b6);
+                      display:flex;align-items:center;justify-content:center;font-size:0.78rem;
+                      box-shadow:0 4px 16px rgba(109,40,217,0.55);">▶</div>
+          <span style="font-size:0.9rem;color:rgba(240,238,255,0.32);cursor:pointer;">⏭</span>
+        </div>
+        <span style="font-size:0.67rem;color:rgba(240,238,255,0.35);">3:41</span>
+      </div>
+    </div>
+
+    <!-- Emotion chips -->
+    <div style="margin-top:2.75rem;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;">
       {% for name, theme in themes.items() %}
-      <span class="text-xs px-3 py-1 rounded-full font-medium"
-            style="background:{{ theme.bg }};color:{{ theme.accent }};border:1px solid {{ theme.border }}">
+      <span class="emo-chip"
+            style="background:{{ theme.bg }};color:{{ theme.accent }};border:1px solid {{ theme.border }};">
         {{ theme.emoji }} {{ name | capitalize }}
       </span>
       {% endfor %}
@@ -50,66 +225,76 @@
   </div>
 </section>
 
-<!-- ── Feature cards ────────────────────────────────────────────────────────── -->
-<section class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-  <h2 class="text-3xl font-bold text-center text-white mb-12">
+<hr class="glass-divider">
+
+<!-- ── Features ──────────────────────────────────────────────────────────── -->
+<section style="max-width:1140px;margin:0 auto;padding:5rem 1.5rem;">
+  <h2 style="font-family:'Outfit',sans-serif;font-size:2rem;font-weight:800;
+             color:#fff;text-align:center;margin-bottom:2.75rem;">
     Everything you need, nothing you don't
   </h2>
-
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;">
     {% set features = [
-      ("📸", "Face Detection", "Point your webcam and let AI instantly read your facial expression in real time — no training or setup required."),
-      ("✍️", "Text Mood Input", "Prefer to type? Describe how you feel in any number of words and get equally accurate recommendations."),
-      ("🎵", "Instant Playlist", "8 hand-picked songs matched to your emotion. Direct links to Spotify, YouTube Music, and YouTube."),
-      ("🆓", "Completely Free", "No Spotify API, no paid subscriptions. Uses Spotify search URLs and Google Gemini free tier."),
-      ("📋", "Mood History", "Every detection is saved for your session so you can track how your mood evolves over time."),
-      ("🔒", "Privacy First", "Photos are processed by Gemini and never stored on our servers. Your face stays yours.")
+      ("📸","Face Detection","Point your webcam and let AI instantly read your facial expression in real time — no training or setup required."),
+      ("✍️","Text Mood Input","Prefer to type? Describe how you feel in any number of words and get equally accurate recommendations."),
+      ("🎵","Instant Playlist","8 hand-picked songs matched to your emotion. Direct links to Spotify, YouTube Music, and YouTube."),
+      ("🆓","Completely Free","No Spotify API, no paid subscriptions. Uses Spotify search URLs and Google Gemini free tier."),
+      ("📋","Mood History","Every detection is saved for your session so you can track how your mood evolves over time."),
+      ("🔒","Privacy First","Photos are processed by Gemini and never stored on our servers. Your face stays yours.")
     ] %}
-    {% for icon, title, desc in features %}
-    <div class="card group">
-      <div class="text-3xl mb-4">{{ icon }}</div>
-      <h3 class="font-semibold text-white text-lg mb-2">{{ title }}</h3>
-      <p class="text-slate-400 text-sm leading-relaxed">{{ desc }}</p>
+    {% for icon,title,desc in features %}
+    <div class="feat-card">
+      <div style="font-size:1.9rem;margin-bottom:14px;">{{ icon }}</div>
+      <h3 style="font-family:'Outfit',sans-serif;font-weight:700;color:#f0eeff;
+                 font-size:0.98rem;margin-bottom:8px;">{{ title }}</h3>
+      <p style="color:rgba(240,238,255,0.46);font-size:0.82rem;line-height:1.65;">{{ desc }}</p>
     </div>
     {% endfor %}
   </div>
 </section>
 
-<!-- ── How it works ─────────────────────────────────────────────────────────── -->
-<section id="how-it-works" class="bg-slate-800/40 border-y border-slate-800 py-20">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6">
-    <h2 class="text-3xl font-bold text-center text-white mb-14">How it works</h2>
+<hr class="glass-divider">
 
-    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 text-center">
-      {% set steps = [
-        ("1", "📸", "Capture", "Take a photo with your webcam or describe your mood in words."),
-        ("2", "🧠", "Analyse", "Gemini AI detects your emotion with confidence score."),
-        ("3", "🎵", "Curate",  "8 songs are hand-picked to match your exact emotional state."),
-        ("4", "▶️", "Listen",  "Open any song directly in Spotify or YouTube Music."),
-      ] %}
-      {% for num, icon, title, desc in steps %}
-      <div class="flex flex-col items-center gap-3">
-        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg
-                    text-violet-300 border border-violet-800"
-             style="background:#1e1b4b">{{ num }}</div>
-        <div class="text-3xl">{{ icon }}</div>
-        <h3 class="font-semibold text-white">{{ title }}</h3>
-        <p class="text-slate-400 text-sm">{{ desc }}</p>
+<!-- ── How it works ───────────────────────────────────────────────────────── -->
+<section id="how-it-works" style="padding:5rem 1.5rem;">
+  <div style="max-width:860px;margin:0 auto;">
+    <h2 style="font-family:'Outfit',sans-serif;font-size:2rem;font-weight:800;
+               color:#fff;text-align:center;margin-bottom:3.5rem;">How it works</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:2rem;text-align:center;">
+      {% set steps=[("1","📸","Capture","Take a photo with your webcam or describe your mood in words."),
+                    ("2","🧠","Analyse","Gemini AI detects your emotion with confidence score."),
+                    ("3","🎵","Curate","8 songs are hand-picked to match your exact emotional state."),
+                    ("4","▶️","Listen","Open any song directly in Spotify or YouTube Music.")] %}
+      {% for num,icon,title,desc in steps %}
+      <div>
+        <div class="step-num">{{ num }}</div>
+        <div style="font-size:2rem;margin-bottom:10px;">{{ icon }}</div>
+        <h3 style="font-family:'Outfit',sans-serif;font-weight:700;color:#f0eeff;
+                   font-size:0.93rem;margin-bottom:6px;">{{ title }}</h3>
+        <p style="color:rgba(240,238,255,0.44);font-size:0.79rem;line-height:1.55;">{{ desc }}</p>
       </div>
       {% endfor %}
     </div>
   </div>
 </section>
 
-<!-- ── CTA ──────────────────────────────────────────────────────────────────── -->
-<section class="max-w-3xl mx-auto px-4 sm:px-6 py-24 text-center">
-  <h2 class="text-4xl font-extrabold text-white mb-4">Ready to vibe?</h2>
-  <p class="text-slate-400 text-lg mb-8">
-    No sign-up. No setup. Just your mood and your music.
-  </p>
-  <a href="/detect" class="btn-primary text-lg py-4 px-12">
-    🎵 Get My Playlist — It's Free
-  </a>
+<hr class="glass-divider">
+
+<!-- ── CTA ──────────────────────────────────────────────────────────────── -->
+<section style="padding:5.5rem 1.5rem;text-align:center;position:relative;overflow:hidden;">
+  <div class="orb" style="width:500px;height:500px;top:50%;left:50%;
+       transform:translate(-50%,-50%);
+       background:radial-gradient(circle,rgba(109,40,217,0.17) 0%,transparent 60%);"></div>
+  <div style="position:relative;z-index:2;">
+    <h2 style="font-family:'Outfit',sans-serif;font-size:2.6rem;font-weight:900;
+               color:#fff;margin-bottom:12px;">Ready to vibe?</h2>
+    <p style="color:rgba(240,238,255,0.48);font-size:0.98rem;margin-bottom:2rem;">
+      No sign-up. No setup. Just your mood and your music.
+    </p>
+    <a href="/detect" class="btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
+      🎵 Get My Playlist — It's Free
+    </a>
+  </div>
 </section>
 
 {% endblock %}

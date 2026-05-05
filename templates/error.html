@@ -2,13 +2,28 @@
 {% block title %}{{ code }} Error — MoodBeats AI{% endblock %}
 
 {% block content %}
-<div class="max-w-lg mx-auto px-4 py-32 text-center">
-  <div class="text-7xl font-extrabold text-violet-800 mb-4">{{ code }}</div>
-  <h1 class="text-2xl font-bold text-white mb-3">
+<div style="max-width:480px;margin:0 auto;padding:8rem 1rem;text-align:center;">
+
+  <!-- Glow orb -->
+  <div style="position:relative;width:120px;height:120px;margin:0 auto 2rem;border-radius:50%;
+              background:radial-gradient(circle,rgba(109,40,217,0.25) 0%,transparent 70%);
+              display:flex;align-items:center;justify-content:center;">
+    <div style="font-family:'Outfit',sans-serif;font-size:3.5rem;font-weight:900;
+                background:linear-gradient(135deg,#c4b5fd,#7c3aed);
+                -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+      {{ code }}
+    </div>
+  </div>
+
+  <h1 style="font-size:1.6rem;font-weight:700;color:var(--text-primary);margin-bottom:10px;font-family:'Outfit',sans-serif;">
     {% if code == 404 %}Page Not Found{% else %}Something Went Wrong{% endif %}
   </h1>
-  <p class="text-slate-400 mb-8">{{ message }}</p>
-  <div class="flex gap-4 justify-center">
+
+  <p style="color:var(--text-secondary);margin-bottom:2.5rem;font-size:0.9rem;line-height:1.65;max-width:340px;margin-left:auto;margin-right:auto;">
+    {{ message }}
+  </p>
+
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
     <a href="/"       class="btn-secondary">← Home</a>
     <a href="/detect" class="btn-primary">Detect My Mood</a>
   </div>

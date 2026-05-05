@@ -5,111 +5,389 @@
   {% else %}No Result — MoodBeats AI{% endif %}
 {% endblock %}
 
+{% block head %}
+<style>
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+
+  /* ── Emotion banner ───────────────────────────────────────────────────── */
+  .emotion-banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 26px;
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 1px solid;
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.08) inset,
+      0 32px 80px rgba(0,0,0,0.5);
+  }
+  .emotion-banner::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  }
+  /* Shimmer overlay */
+  .emotion-banner::after {
+    content: '';
+    position: absolute; inset:0; border-radius:26px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  /* ── Music player card ────────────────────────────────────────────────── */
+  .player-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.09);
+    background: rgba(255,255,255,0.048);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.06) inset,
+      0 18px 50px rgba(0,0,0,0.40);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .player-card::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+  }
+  .player-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(167,139,250,0.22);
+    box-shadow: 0 28px 70px rgba(0,0,0,0.5), 0 0 35px rgba(109,40,217,0.14);
+  }
+
+  /* ── Track art placeholder ────────────────────────────────────────────── */
+  .track-art {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .track-art::after {
+    content: '';
+    position: absolute; inset:0; border-radius:14px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+  }
+
+  /* ── EQ bars ──────────────────────────────────────────────────────────── */
+  .eq {
+    display: flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 18px;
+  }
+  .eq-b {
+    width: 2.5px;
+    border-radius: 2px;
+    animation: eqA var(--d) ease-in-out infinite alternate;
+    transform-origin: bottom;
+    opacity: 0.7;
+  }
+  @keyframes eqA { from {transform:scaleY(0.18)} to {transform:scaleY(1)} }
+
+  /* ── Progress track ───────────────────────────────────────────────────── */
+  .prog-track {
+    height: 3px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.10);
+    position: relative;
+    cursor: pointer;
+    overflow: visible;
+  }
+  .prog-fill {
+    height: 100%;
+    border-radius: 99px;
+    position: relative;
+  }
+  .prog-thumb {
+    position: absolute;
+    right: -5px; top: 50%;
+    transform: translateY(-50%);
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 6px rgba(255,255,255,0.5);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .prog-track:hover .prog-thumb { opacity: 1; }
+
+  /* ── Control buttons ──────────────────────────────────────────────────── */
+  .ctrl-play {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border: none;
+    color: #fff;
+  }
+  .ctrl-play:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(109,40,217,0.55);
+  }
+  .ctrl-skip {
+    font-size: 0.85rem;
+    color: rgba(240,238,255,0.35);
+    cursor: pointer;
+    transition: color 0.15s ease;
+    background: none; border: none;
+  }
+  .ctrl-skip:hover { color: rgba(240,238,255,0.75); }
+
+  /* ── Stream links ─────────────────────────────────────────────────────── */
+  .stream-btn {
+    flex: 1;
+    text-align: center;
+    font-size: 0.71rem;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    padding: 7px 8px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .stream-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .stream-btn.yt {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: rgba(240,238,255,0.65);
+    flex: 0 0 auto;
+    width: 34px; padding: 7px 0;
+  }
+
+  /* ── Track number badge ───────────────────────────────────────────────── */
+  .track-num {
+    position: absolute;
+    top: 12px; left: 12px;
+    width: 22px; height: 22px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    backdrop-filter: blur(8px);
+  }
+
+  /* ── Reason quote ─────────────────────────────────────────────────────── */
+  .reason-text {
+    font-size: 0.75rem;
+    line-height: 1.55;
+    font-style: italic;
+    color: rgba(240,238,255,0.42);
+    border-left: 2px solid;
+    padding-left: 10px;
+    flex: 1;
+  }
+
+  /* ── Stagger reveal ───────────────────────────────────────────────────── */
+  @keyframes cardIn {
+    from { opacity:0; transform: translateY(20px) scale(0.98); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+  }
+  .card-reveal {
+    animation: cardIn 0.45s ease both;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+<div style="max-width:1280px;margin:0 auto;padding:2.5rem 1.25rem 4rem;">
 
   {% if not result %}
-  <!-- ── Empty / expired state ──────────────────────────────────────────── -->
-  <div class="text-center py-24">
-    <div class="text-6xl mb-6">🎵</div>
-    <h2 class="text-2xl font-bold text-white mb-3">No result found</h2>
-    <p class="text-slate-400 mb-8">
-      This link may have expired (results are kept for 1 hour) or is invalid.
+  <!-- Empty state -->
+  <div style="text-align:center;padding:7rem 1rem;">
+    <div style="font-size:3rem;opacity:0.35;margin-bottom:1.25rem;">🎵</div>
+    <h2 style="font-family:'Outfit',sans-serif;font-size:1.5rem;font-weight:700;
+               color:#f0eeff;margin-bottom:10px;">No result found</h2>
+    <p style="color:rgba(240,238,255,0.48);font-size:0.88rem;max-width:320px;
+              margin:0 auto 2rem;line-height:1.65;">
+      This link may have expired (results kept for 1 hour) or is invalid.
     </p>
     <a href="/detect" class="btn-primary">← Detect My Mood</a>
   </div>
 
   {% else %}
 
-  <!-- ── Emotion banner ─────────────────────────────────────────────────── -->
-  <div class="rounded-2xl p-8 mb-10 text-center border"
-       style="background:{{ theme.bg }};border-color:{{ theme.border }}">
+  <!-- ── Ambient glow matching emotion colour ──────────────────────────── -->
+  <div class="orb" style="width:600px;height:500px;top:-180px;left:50%;
+       transform:translateX(-50%);
+       background:radial-gradient(circle,{{ theme.accent }}1a 0%,transparent 62%);"></div>
 
-    <div class="text-6xl mb-3 leading-none">{{ theme.emoji }}</div>
+  <!-- ── Emotion banner ────────────────────────────────────────────────── -->
+  <div class="emotion-banner fade-up"
+       style="background:{{ theme.bg }};border-color:{{ theme.border }};margin-bottom:2rem;">
 
-    <h1 class="text-4xl font-extrabold mb-2"
-        style="color:{{ theme.accent }}">
-      {{ result.emotion | capitalize }}
-    </h1>
+    <!-- Inner glow -->
+    <div class="orb" style="width:400px;height:400px;top:50%;left:50%;
+         transform:translate(-50%,-50%);
+         background:radial-gradient(circle,{{ theme.accent }}28 0%,transparent 62%);
+         filter:blur(40px);"></div>
 
-    <!-- Confidence bar -->
-    <div class="max-w-xs mx-auto mt-4 mb-2">
-      <div class="flex justify-between text-xs text-slate-400 mb-1">
-        <span>AI Confidence</span>
-        <span>{{ result.confidence }}%</span>
+    <div style="position:relative;z-index:1;">
+      <div style="font-size:4.5rem;margin-bottom:10px;line-height:1;
+                  filter:drop-shadow(0 4px 20px {{ theme.accent }}55);">{{ theme.emoji }}</div>
+
+      <h1 style="font-family:'Outfit',sans-serif;font-size:3.2rem;font-weight:900;
+                 margin-bottom:6px;color:{{ theme.accent }};letter-spacing:-0.03em;">
+        {{ result.emotion | capitalize }}
+      </h1>
+
+      <!-- Confidence -->
+      <div style="max-width:300px;margin:1.25rem auto 0;">
+        <div style="display:flex;justify-content:space-between;font-size:0.72rem;
+                    color:rgba(240,238,255,0.45);margin-bottom:6px;">
+          <span>AI Confidence</span>
+          <span style="color:{{ theme.accent }};font-weight:700;">{{ result.confidence }}%</span>
+        </div>
+        <div style="height:3px;border-radius:99px;background:rgba(255,255,255,0.10);overflow:hidden;">
+          <div class="confidence-fill"
+               data-width="{{ result.confidence }}%"
+               style="height:100%;border-radius:99px;background:{{ theme.accent }};width:0%;
+                      box-shadow:0 0 10px {{ theme.accent }}88;"></div>
+        </div>
       </div>
-      <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-        <div class="confidence-fill rounded-full"
-             data-width="{{ result.confidence }}%"
-             style="background:{{ theme.accent }};width:0%"></div>
-      </div>
+
+      <p style="color:rgba(240,238,255,0.55);font-size:0.93rem;line-height:1.7;
+                max-width:540px;margin:1.25rem auto 0;">
+        {{ result.mood_description }}
+      </p>
     </div>
-
-    <p class="mood-description max-w-xl mx-auto mt-4">
-      {{ result.mood_description }}
-    </p>
   </div>
 
-  <!-- ── Playlist header ────────────────────────────────────────────────── -->
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-xl font-bold text-white">
+  <!-- ── Playlist header ───────────────────────────────────────────────── -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;"
+       class="fade-up fade-up-d1">
+    <h2 style="font-family:'Outfit',sans-serif;font-size:1.15rem;font-weight:700;color:#f0eeff;
+               display:flex;align-items:center;gap:8px;">
       🎵 Your Playlist
-      <span class="text-slate-500 font-normal text-base ml-2">
-        ({{ result.songs | length }} songs)
+      <span style="color:rgba(240,238,255,0.35);font-weight:400;font-size:0.9rem;">
+        {{ result.songs | length }} songs
       </span>
     </h2>
-    <a href="/detect" class="btn-secondary text-sm py-2 px-4">← Try Again</a>
+    <a href="/detect" class="btn-secondary" style="font-size:0.8rem;padding:0.42rem 1.1rem;">← Try Again</a>
   </div>
 
-  <!-- ── Song grid ──────────────────────────────────────────────────────── -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
-    {% for song in result.songs %}
-    <div class="card flex flex-col">
+  <!-- ── Song grid — each card is a music player ───────────────────────── -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:3rem;">
 
-      <!-- Number + title row -->
-      <div class="flex items-start gap-3 mb-3">
-        <div class="shrink-0 w-8 h-8 rounded-full flex items-center justify-center
-                    text-xs font-bold border"
-             style="background:{{ theme.bg }};color:{{ theme.accent }};border-color:{{ theme.border }}">
-          {{ loop.index }}
+    {% for song in result.songs %}
+    {% set prog = [22,38,55,30,45,60,25,42] %}
+    {% set prog_pct = prog[loop.index0 % 8] %}
+
+    <div class="player-card card-reveal"
+         style="animation-delay:{{ loop.index0 * 0.06 }}s;padding:0;">
+
+      <!-- Track number badge -->
+      <div class="track-num"
+           style="background:{{ theme.bg }};color:{{ theme.accent }};border:1px solid {{ theme.border }};">
+        {{ loop.index }}
+      </div>
+
+      <!-- ── Header: art + meta + EQ ──────────────────────────────── -->
+      <div style="padding:1rem 1rem 0.85rem;display:flex;align-items:center;gap:11px;">
+
+        <!-- Album art placeholder with emotion colour -->
+        <div class="track-art"
+             style="background:linear-gradient(135deg,{{ theme.bg }},rgba(0,0,0,0.6));
+                    border:1px solid {{ theme.border }};
+                    box-shadow:0 4px 16px {{ theme.accent }}33;">
+          {{ theme.emoji }}
         </div>
-        <div class="min-w-0 flex-1">
-          <p class="font-semibold text-sm leading-snug truncate"
-             style="color:{{ theme.accent }}" title="{{ song.title }}">
+
+        <!-- Title + artist -->
+        <div style="flex:1;min-width:0;">
+          <p style="font-family:'Outfit',sans-serif;font-weight:700;font-size:0.88rem;
+                    color:{{ theme.accent }};white-space:nowrap;overflow:hidden;
+                    text-overflow:ellipsis;margin-bottom:2px;" title="{{ song.title }}">
             {{ song.title }}
           </p>
-          <p class="text-slate-400 text-xs mt-0.5 truncate" title="{{ song.artist }}">
+          <p style="font-size:0.72rem;color:rgba(240,238,255,0.40);white-space:nowrap;
+                    overflow:hidden;text-overflow:ellipsis;" title="{{ song.artist }}">
             {{ song.artist }}
             {% if song.year %} · {{ song.year }}{% endif %}
             {% if song.genre %} · {{ song.genre }}{% endif %}
           </p>
         </div>
+
+        <!-- EQ bars (animated) -->
+        <div class="eq">
+          <div class="eq-b" style="height:9px; --d:0.95s;background:{{ theme.accent }};"></div>
+          <div class="eq-b" style="height:18px;--d:0.68s;animation-delay:0.1s;background:{{ theme.accent }};"></div>
+          <div class="eq-b" style="height:12px;--d:1.1s;animation-delay:0.2s;background:{{ theme.accent }};"></div>
+          <div class="eq-b" style="height:16px;--d:0.8s;animation-delay:0.05s;background:{{ theme.accent }};"></div>
+        </div>
       </div>
 
-      <!-- Reason -->
-      <p class="text-slate-500 text-xs leading-relaxed italic flex-1 mb-4
-                border-l-2 pl-2"
-         style="border-color:{{ theme.border }}">
-        {{ song.reason }}
-      </p>
+      <!-- ── Progress bar ──────────────────────────────────────────── -->
+      <div style="padding:0 1rem;">
+        <div class="prog-track">
+          <div class="prog-fill" style="width:{{ prog_pct }}%;background:linear-gradient(90deg,{{ theme.accent }}99,{{ theme.accent }});">
+            <div class="prog-thumb"></div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:5px;">
+          <span style="font-size:0.63rem;color:rgba(240,238,255,0.30);">
+            0:{{ '%02d'|format((prog_pct * 2)|int) }}
+          </span>
+          <span style="font-size:0.63rem;color:rgba(240,238,255,0.30);">3:{{ '%02d'|format(30 + loop.index * 7 % 30) }}</span>
+        </div>
+      </div>
 
-      <!-- Action buttons -->
-      <div class="flex gap-2 flex-wrap mt-auto">
-        <a href="{{ song.spotify_url }}"  target="_blank" rel="noopener"
-           class="flex-1 text-center text-xs font-semibold py-2 px-3 rounded-lg
-                  transition hover:opacity-90"
-           style="background:#1db954;color:#fff">
+      <!-- ── Playback controls ──────────────────────────────────────── -->
+      <div style="padding:0.6rem 1rem 0.75rem;display:flex;align-items:center;justify-content:center;gap:18px;">
+        <button class="ctrl-skip">⏮</button>
+        <button class="ctrl-play"
+                style="background:linear-gradient(135deg,{{ theme.accent }},{{ theme.accent }}99);
+                       box-shadow:0 4px 16px {{ theme.accent }}44;">
+          ▶
+        </button>
+        <button class="ctrl-skip">⏭</button>
+      </div>
+
+      <!-- ── Reason quote ───────────────────────────────────────────── -->
+      <div style="padding:0 1rem 0.85rem;">
+        <p class="reason-text" style="border-color:{{ theme.border }};">
+          {{ song.reason }}
+        </p>
+      </div>
+
+      <!-- ── Divider ────────────────────────────────────────────────── -->
+      <div style="height:1px;background:rgba(255,255,255,0.06);margin:0 1rem;"></div>
+
+      <!-- ── Stream buttons ─────────────────────────────────────────── -->
+      <div style="padding:0.75rem 1rem;display:flex;gap:7px;">
+        <a href="{{ song.spotify_url }}" target="_blank" rel="noopener"
+           class="stream-btn"
+           style="background:#1db954;color:#fff;
+                  box-shadow:0 4px 14px rgba(29,185,84,0.25);">
           🎵 Spotify
         </a>
         <a href="{{ song.yt_music_url }}" target="_blank" rel="noopener"
-           class="flex-1 text-center text-xs font-semibold py-2 px-3 rounded-lg
-                  transition hover:opacity-90"
-           style="background:#c00;color:#fff">
+           class="stream-btn"
+           style="background:#cc0000;color:#fff;
+                  box-shadow:0 4px 14px rgba(204,0,0,0.25);">
           ▶ YT Music
         </a>
-        <a href="{{ song.youtube_url }}"  target="_blank" rel="noopener"
-           class="text-center text-xs py-2 px-3 rounded-lg transition
-                  bg-slate-700 hover:bg-slate-600 text-slate-300">
+        <a href="{{ song.youtube_url }}" target="_blank" rel="noopener"
+           class="stream-btn yt" title="Search on YouTube">
           🔍
         </a>
       </div>
@@ -117,8 +395,8 @@
     {% endfor %}
   </div>
 
-  <!-- ── Bottom CTAs ────────────────────────────────────────────────────── -->
-  <div class="flex flex-wrap gap-4 justify-center">
+  <!-- ── Bottom CTAs ───────────────────────────────────────────────────── -->
+  <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;" class="fade-up">
     <a href="/detect"  class="btn-primary">🎭 Detect Again</a>
     <a href="/history" class="btn-secondary">📋 View History</a>
   </div>
